@@ -1,8 +1,11 @@
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.TreeMap;
 
-public class DijkstraTreeMap {
+import com.sun.tools.javac.util.Pair;
+
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.TreeSet;
+
+public class DijkstraTreeSet {
     static class Edge {
         int source;
         int destination;
@@ -14,6 +17,16 @@ public class DijkstraTreeMap {
             this.weight = weight;
         }
     }
+    static class PairComparator implements Comparator<Pair<Integer, Integer>>{
+
+        @Override
+        public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
+            //sort using distance values
+            int key1 = o1.fst;
+            int key2 = o2.snd;
+            return key1-key2;
+        }
+    }
 
     static class Graph {
         int vertices;
@@ -23,7 +36,7 @@ public class DijkstraTreeMap {
             this.vertices = vertices;
             adjacencylist = new LinkedList[vertices];
             //initialize adjacency lists for all the vertices
-            for (int i = 0; i < vertices; i++) {
+            for (int i = 0; i <vertices ; i++) {
                 adjacencylist[i] = new LinkedList<>();
             }
         }
@@ -36,36 +49,37 @@ public class DijkstraTreeMap {
             adjacencylist[destination].addFirst(edge); //for undirected graph
         }
 
-        public void dijkstra_GetMinDistances(int sourceVertex) {
+        public void dijkstra_GetMinDistances(int sourceVertex){
 
             boolean[] inSPT = new boolean[vertices];
             //distance used to store the distance of vertex from a source
-            int[] distance = new int[vertices];
+            int [] distance = new int[vertices];
 
             //Initialize all the distances to infinity
-            for (int i = 0; i < vertices; i++) {
+            for (int i = 0; i <vertices ; i++) {
                 distance[i] = Integer.MAX_VALUE;
             }
             //Initialize priority queue
             //override the comparator to do the sorting based keys
-            TreeMap<Integer, Integer> treeMap = new TreeMap(); // <minDist,vertex>
-            //create the pair for the first index, 0 distance 0 index
+            TreeSet treeSet = new TreeSet<>(new PairComparator());
+            //create the pair for for the first index, 0 distance 0 index
             distance[0] = 0;
+            Pair<Integer, Integer> p0 = new Pair<>(distance[0],0);
             //add it to tree set
-            treeMap.put(distance[0], 0);
+            treeSet.add(p0);
 
             //while priority queue is not empty
-            while (!treeMap.isEmpty()) {
+            while(!treeSet.isEmpty()){
                 //extract the min
-                Map.Entry<Integer, Integer> entry = treeMap.pollFirstEntry();
+                Pair<Integer, Integer> extractedPair = (Pair<Integer, Integer>) treeSet.pollFirst();
 
                 //extracted vertex
-                int source = entry.getValue();
-                if (inSPT[source] == false) {
-                    inSPT[source] = true;
+                int extractedVertex = extractedPair.snd;
+                if(inSPT[extractedVertex]==false) {
+                    inSPT[extractedVertex] = true;
 
                     //iterate through all the adjacent vertices and update the keys
-                    LinkedList<Edge> list = adjacencylist[source];
+                    LinkedList<Edge> list = adjacencylist[extractedVertex];
                     for (int i = 0; i < list.size(); i++) {
                         Edge edge = list.get(i);
                         int destination = edge.destination;
@@ -74,10 +88,11 @@ public class DijkstraTreeMap {
                             ///check if distance needs an update or not
                             //means check total weight from source to vertex_V is less than
                             //the current distance value, if yes then update the distance
-                            int newKey = distance[source] + edge.weight;
+                            int newKey =  distance[extractedVertex] + edge.weight ;
                             int currentKey = distance[destination];
-                            if (currentKey > newKey) {
-                                treeMap.put(newKey, destination);
+                            if(currentKey>newKey){
+                                Pair<Integer, Integer> p = new Pair<>(newKey, destination);
+                                treeSet.add(p);
                                 distance[destination] = newKey;
                             }
                         }
@@ -88,14 +103,13 @@ public class DijkstraTreeMap {
             printDijkstra(distance, sourceVertex);
         }
 
-        public void printDijkstra(int[] distance, int sourceVertex) {
+        public void printDijkstra(int[] distance, int sourceVertex){
             System.out.println("Dijkstra Algorithm: (Adjacency List + TreeSet)");
-            for (int i = 0; i < vertices; i++) {
-                System.out.println("Source Vertex: " + sourceVertex + " to vertex " + +i +
+            for (int i = 0; i <vertices ; i++) {
+                System.out.println("Source Vertex: " + sourceVertex + " to vertex " +   + i +
                         " distance: " + distance[i]);
             }
         }
-
         public static void main(String[] args) {
             int vertices = 6;
             Graph graph = new Graph(vertices);
