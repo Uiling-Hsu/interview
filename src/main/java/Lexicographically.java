@@ -13,21 +13,24 @@ public class Lexicographically {
 
         // If all characters are 'z',
         // append an 'a' at the end.
-        if (i == -1)
-            str = str + 'a';
-
-// If there are some
-// non-z characters
-        else
-            str = str.substring(0, i) +
-                    (char) ((int) (str.charAt(i)) + 1) +
-                    str.substring(i + 1);
-        return str;
+        String result;
+        if (i == -1) {
+            result = str + 'a';
+            // If there are some
+            // non-z characters
+        }else {
+            result = str.substring(0, i) +
+                    (char) ((int) (str.charAt(i)) + 1);
+            for(int j = 0; j < str.substring(i+1).length();j++){
+                result+="a";
+            }
+        }
+        return result;
     }
 
     // Driver Code
     public static void main(String[] args) {
-        String str = "z";
+        String str = "abzz";
         System.out.print(nextWord(str));
     }
 }
