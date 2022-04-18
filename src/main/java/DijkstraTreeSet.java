@@ -61,7 +61,8 @@ public class DijkstraTreeSet {
             }
             //Initialize priority queue
             //override the comparator to do the sorting based keys
-            TreeSet treeSet = new TreeSet<>(new PairComparator());
+//            TreeSet treeSet = new TreeSet<>(new PairComparator());
+            TreeSet<Pair<Integer,Integer>> treeSet = new TreeSet<Pair<Integer,Integer>>((a,b)->a.fst - b.fst);
             //create the pair for for the first index, 0 distance 0 index
             distance[0] = 0;
             Pair<Integer, Integer> p0 = new Pair<>(distance[0],0);
