@@ -6,36 +6,27 @@ public class MaxSizeBST {
     Node maxRoot ;
 
     public Node findMaxSizeBST(Node root){
-        isBST(root, Integer.MAX_VALUE, Integer.MIN_VALUE);
-        System.out.println(maxCount);
+        helper(root);
         return maxRoot;
     }
 
-    public Result isBST(Node root, int max, int min){
+    public int[] helper(Node root){ // [size, min, max]
         if(root == null){
-            return new Result(0, true,null);
+            return new int[]{0, Integer.MAX_VALUE, Integer.MIN_VALUE};
         }
-        if(root.val > min && root.val < max){
-            Result leftBSTCount = isBST(root.left, root.val, min);
-            Result rightBSTCount = isBST(root.right, max, root.val);
-            int total = 1;
-            if(!leftBSTCount.isBST || !rightBSTCount.isBST){
-                return new Result(0, false, null);
-            }
-            if(root.left != null){
-                total += leftBSTCount.total;
-            }
-            if(root.right != null){
-                total += rightBSTCount.total;
-            }
-            if(total > maxCount){
-                maxCount = total;
+        int[] left = helper(root.left);
+        int[] right = helper(root.right);
+        if(root.val > left[2] && root.val < right[1]){
+            int size = left[0] + right[0] + 1;
+            if(size > maxCount){
+                maxCount = size;
                 maxRoot = root;
             }
-            return new Result(total, true, root);
+            return new int[]{size, Math.min(root.val, left[1]), Math.max(root.val, right[2])};
         }
-        return new Result(0, false, null);
+        return new int[]{0, Integer.MIN_VALUE, Integer.MAX_VALUE};
     }
+
 
     static class Node{
         Node right;
@@ -59,11 +50,11 @@ public class MaxSizeBST {
     }
 
     public static void main(String[] args){
-        Node root = new Node(new Node(new Node(new Node(null, null,1), new Node(null, null,3),2),new Node(null, null,5),4), new Node(null, null,7), 8);
+        Node root = new Node(new Node(null, null,1), new Node(new Node(null, null,5), new Node(null, null,8),7),10);
+//        Node root =new Node(new Node(null, null,1),new Node(null, null,5),4);
         MaxSizeBST maxSizeBST = new MaxSizeBST();
         Node result = maxSizeBST.findMaxSizeBST(root);
-        System.out.println(result.val);
-
+        System.out.println(maxSizeBST.maxCount);
     }
 
 }
